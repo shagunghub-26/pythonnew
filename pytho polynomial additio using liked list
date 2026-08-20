@@ -1,0 +1,134 @@
+class Node:
+    def __init__(self, coefficient, power):
+        self.coefficient = coefficient
+        self.power = power
+        self.next = None
+
+
+class Polynomial:
+    def __init__(self):
+        self.head = None
+
+    def insert(self, coefficient, power):
+        if coefficient == 0:
+            return
+
+        new_node = Node(coefficient, power)
+
+        # Empty list or highest power
+        if self.head is None or power > self.head.power:
+            new_node.next = self.head
+            self.head = new_node
+            return
+
+        current = self.head
+
+        # Same power as first node
+        if current.power == power:
+            current.coefficient += coefficient
+            return
+
+        # Find correct position
+        while current.next is not None and current.next.power > power:
+            current = current.next
+
+        # Same power found
+        if current.next is not None and current.next.power == power:
+            current.next.coefficient += coefficient
+        else:
+            new_node.next = current.next
+            current.next = new_node
+
+    def display(self):
+        if self.head is None:
+            return "0"
+
+        terms = []
+        current = self.head
+
+        while current is not None:
+            coefficient = current.coefficient
+            power = current.power
+
+            if coefficient != 0:
+
+                if power == 0:
+                    term = str(abs(coefficient))
+
+                elif power == 1:
+                    term = ("" if abs(coefficient) == 1
+                            else str(abs(coefficient))) + "x"
+
+                else:
+                    term = ("" if abs(coefficient) == 1
+                            else str(abs(coefficient))) + f"x^{power}"
+
+                if not terms:
+                    if coefficient < 0:
+                        terms.append("-" + term)
+                    else:
+                        terms.append(term)
+                else:
+                    if coefficient < 0:
+                        terms.append(" - " + term)
+                    else:
+                        terms.append(" + " + term)
+
+            current = current.next
+
+        return "".join(terms) if terms else "0"
+
+
+def add_polynomials(p1, p2):
+    result = Polynomial()
+
+    # Add first polynomial
+    current = p1.head
+    while current is not None:
+        result.insert(current.coefficient, current.power)
+        current = current.next
+
+    # Add second polynomial
+    current = p2.head
+    while current is not None:
+        result.insert(current.coefficient, current.power)
+        current = current.next
+
+    return result
+
+
+def read_polynomial(name):
+    polynomial = Polynomial()
+
+    n = int(input(f"Enter number of terms in {name}: "))
+
+    for i in range(n):
+        print(f"Term {i + 1}:")
+
+        coefficient = int(input("Enter coefficient: "))
+        power = int(input("Enter power: "))
+
+        polynomial.insert(coefficient, power)
+
+    return polynomial
+
+
+def main():
+
+    print("==============================================")
+    print("   POLYNOMIAL ADDITION USING LINKED LISTS")
+    print("==============================================")
+
+    p1 = read_polynomial("Polynomial 1")
+    p2 = read_polynomial("Polynomial 2")
+
+    print("\nPolynomial 1:", p1.display())
+    print("Polynomial 2:", p2.display())
+
+    result = add_polynomials(p1, p2)
+
+    print("Result      :", result.display())
+
+
+if __name__ == "__main__":
+    main()
