@@ -1,0 +1,145 @@
+
+class Node:
+    def __init__(self, c, p):
+        self.c = c
+        self.p = p
+        self.next = None
+
+
+class Polynomial:
+    def __init__(self):
+        self.head = None
+
+    def insert(self, c, p):
+        if c == 0:
+            return
+
+        prev = None
+        cur = self.head
+
+        while cur and cur.p > p:
+            prev = cur
+            cur = cur.next
+
+        if cur and cur.p == p:
+            cur.c += c
+            if cur.c == 0:
+                self.delete(p)
+            return
+
+        node = Node(c, p)
+        node.next = cur
+
+        if prev:
+            prev.next = node
+        else:
+            self.head = node
+
+    def search(self, p):
+        cur = self.head
+        while cur:
+            if cur.p == p:
+                return cur.c
+            cur = cur.next
+        return None
+
+    def delete(self, p):
+        prev = None
+        cur = self.head
+
+        while cur:
+            if cur.p == p:
+                if prev:
+                    prev.next = cur.next
+                else:
+                    self.head = cur.next
+                return True
+
+            prev = cur
+            cur = cur.next
+
+        return False
+
+    def display(self):
+        cur = self.head
+        terms = []
+
+        while cur:
+            c, p = cur.c, cur.p
+
+            if p == 0:
+                terms.append(str(c))
+            elif p == 1:
+                terms.append(f"{c}x")
+            else:
+                terms.append(f"{c}x^{p}")
+
+            cur = cur.next
+
+        print(" + ".join(terms) if terms else "0")
+
+
+def read_poly(name):
+    poly = Polynomial()
+    n = int(input(f"Number of terms in {name}: "))
+
+    for i in range(n):
+        print(f"Term {i + 1}:")
+        c = int(input("Coefficient: "))
+        p = int(input("Power: "))
+        poly.insert(c, p)
+
+    return poly
+
+
+def add(a, b):
+    result = Polynomial()
+
+    for poly in (a, b):
+        cur = poly.head
+        while cur:
+            result.insert(cur.c, cur.p)
+            cur = cur.next
+
+    return result
+
+
+print("POLYNOMIAL ADDITION USING LINKED LISTS")
+print("PHASE-II VERSION\n")
+
+p1 = read_poly("Polynomial 1")
+p2 = read_poly("Polynomial 2")
+
+print("\nPolynomial 1: ", end="")
+p1.display()
+
+print("Polynomial 2: ", end="")
+p2.display()
+
+print("\nResult: ", end="")
+add(p1, p2).display()
+
+# Search by power
+power = int(input("\nEnter power to search in Polynomial 1: "))
+c = p1.search(power)
+
+if c is not None:
+    if power == 0:
+        print(f"Term found: {c}")
+    elif power == 1:
+        print(f"Term found: {c}x")
+    else:
+        print(f"Term found: {c}x^{power}")
+else:
+    print("Term not found")
+
+# Delete by power
+power = int(input("\nEnter power to delete from Polynomial 1: "))
+
+if p1.delete(power):
+    print("Term deleted successfully.")
+else:
+    print("Term not found")
+
+print("Updated Polynomial 1: ", end="")
+p1.display()
